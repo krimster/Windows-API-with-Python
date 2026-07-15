@@ -51,3 +51,20 @@ class SECURITY_ATTRIBUTES(ctypes.Structure):
         ("lpSecurityDescriptor", LPVOID),
         ("bInheritHandle", BOOL),
     )
+
+
+#
+# Structure for DNS_CACHE_ENTRY
+#
+class DNS_CACHE_ENTRY(ctypes.Structure):
+    pass
+
+PDNS_CACHE_ENTRY = ctypes.POINTER(DNS_CACHE_ENTRY)
+
+DNS_CACHE_ENTRY._fields_ = [
+    ("pNext", PDNS_CACHE_ENTRY),
+    ("recName", LPWSTR),
+    ("wType", WORD),
+    ("wDataLength", WORD),
+    ("dwFlags", DWORD),
+]

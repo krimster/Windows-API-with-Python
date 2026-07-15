@@ -2,12 +2,13 @@
 import ctypes
 from ctypes import wintypes
 
-from common.winapi import user32, kernel32
+from common.winapi import user32, kernel32, dnsapi
 
 from common.structures import (
     SECURITY_ATTRIBUTES,
     STARTUP_INFO,
     PROCESS_INFORMATION,
+    DNS_CACHE_ENTRY,
 )
 
 #
@@ -88,3 +89,14 @@ kernel32.CreateProcessW.argtypes = (
 )
 
 kernel32.CreateProcessW.restype = wintypes.BOOL
+
+
+#
+# DnsGetCacheDataTable
+#
+
+dnsapi.DnsGetCacheDataTable.argtypes = (
+    ctypes.POINTER(DNS_CACHE_ENTRY),
+)
+
+dnsapi.DnsGetCacheDataTable.restype = wintypes.BOOL
