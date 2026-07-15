@@ -41,6 +41,10 @@ class STARTUP_INFO(ctypes.Structure):
         ("hStdError", HANDLE),
     ]
 
+#
+# Structure for Security Attributes
+# https://learn.microsoft.com/en-us/windows/win32/api/wtypesbase/ns-wtypesbase-security_attributes
+#
 class SECURITY_ATTRIBUTES(ctypes.Structure):
     _fields_ = (
         ("nLength", DWORD),
