@@ -1,6 +1,14 @@
+
+import ctypes
 from ctypes import wintypes
 
 from common.winapi import user32, kernel32
+
+from common.structures import (
+    SECURITY_ATTRIBUTES,
+    STARTUP_INFO,
+    PROCESS_INFORMATION,
+)
 
 #
 # FindWindowW
@@ -59,3 +67,24 @@ kernel32.CloseHandle.argtypes = (
 )
 
 kernel32.CloseHandle.restype = wintypes.BOOL
+
+#
+# CreateProcessW
+#
+
+LPSECURITY_ATTRIBUTES = ctypes.POINTER(SECURITY_ATTRIBUTES)
+
+kernel32.CreateProcessW.argtypes = (
+    wintypes.LPCWSTR,
+    wintypes.LPWSTR,
+    LPSECURITY_ATTRIBUTES,
+    LPSECURITY_ATTRIBUTES,
+    wintypes.BOOL,
+    wintypes.DWORD,
+    wintypes.LPVOID,
+    wintypes.LPCWSTR,
+    ctypes.POINTER(STARTUP_INFO),
+    ctypes.POINTER(PROCESS_INFORMATION),
+)
+
+kernel32.CreateProcessW.restype = wintypes.BOOL
