@@ -45,7 +45,7 @@ Some of the APIs explored include:
 - `TerminateProcess`
 - `CloseHandle`
 
-Additional APIs will be added as I progress through the course.
+Additional APIs will be added in the future.
 
 ---
 
@@ -71,14 +71,3 @@ This repository is intended solely for educational and defensive security resear
 
 All demonstrations are performed against systems that I own or have explicit permission to test. The techniques demonstrated should never be used against systems without proper authorization.
 
----
-
-## Acknowledgements
-
-Course:
-
-**Hacking the Windows API with Python – Real Ethical Hacking**
-
-Provided by **RedTeamNation.com**
-
-This repository contains my own notes, implementations, and experiments completed while following the course.
