@@ -68,3 +68,18 @@ def open_process(pid: int, access: int = constants.PROCESS_ALL_ACCESS) -> wintyp
         )
 
     return hProcess
+
+
+def open_process_token(hProcess, access):
+    token = wintypes.HANDLE()
+
+    if not kernel32.OpenProcessToken(
+        hProcess,
+        access,
+        ctypes.byref(token)
+    ):
+        raise RuntimeError(
+            f"OpenProcessToken failed!. Error: {ctypes.get_last_error()}"
+        )
+
+    return token

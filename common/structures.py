@@ -68,3 +68,34 @@ DNS_CACHE_ENTRY._fields_ = [
     ("wDataLength", WORD),
     ("dwFlags", DWORD),
 ]
+
+
+#
+# Structure for LUID
+#
+class LUID(ctypes.Structure):
+    _fields_= [
+        ("LowPart", DWORD),
+        ("HighPart", DWORD),
+    ]
+
+
+#
+# Structure for LUID_AND_ATTRIBUTES
+#
+class LUID_AND_ATTRIBUTES(ctypes.Structure):
+    _fields_= [
+        ("Luid", LUID),
+        ("Attributes", DWORD),
+    ]
+
+
+#
+# Structure for PRIVILEGE_SET
+#
+class PRIVILEGE_SET(ctypes.Structure):
+    _fields_= [
+        ("PrivilegeCount", DWORD),
+        ("Control", DWORD),
+        ("Privileges", LUID_AND_ATTRIBUTES)
+    ]

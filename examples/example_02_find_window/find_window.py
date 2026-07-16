@@ -18,7 +18,7 @@ Reference:
    https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-findwindoww
 """
 
-import common.helpers as helpers
+from common import helpers
 
 def main() -> None:
     """Find a window by its title."""
