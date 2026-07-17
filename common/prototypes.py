@@ -12,6 +12,7 @@ from common.structures import (
     LUID,
     LUID_AND_ATTRIBUTES,
     PRIVILEGE_SET,
+    TOKEN_PRIVILEGES,
 )
 
 
@@ -165,3 +166,24 @@ advapi32.PrivilegeCheck.argtypes = (
 )
 
 advapi32.PrivilegeCheck.restype = wintypes.BOOL
+
+
+# BOOL AdjustTokenPrivileges(
+#   [in]            HANDLE            TokenHandle,
+#   [in]            BOOL              DisableAllPrivileges,
+#   [in, optional]  PTOKEN_PRIVILEGES NewState,
+#   [in]            DWORD             BufferLength,
+#   [out, optional] PTOKEN_PRIVILEGES PreviousState,
+#   [out, optional] PDWORD            ReturnLength
+# );
+
+advapi32.AdjustTokenPrivileges.argtypes = (
+    wintypes.HANDLE,
+    wintypes.BOOL,
+    ctypes.POINTER(TOKEN_PRIVILEGES),
+    wintypes.DWORD,
+    ctypes.POINTER(TOKEN_PRIVILEGES),
+    ctypes.POINTER(wintypes.DWORD),
+)
+
+advapi32.AdjustTokenPrivileges.restype = wintypes.BOOL

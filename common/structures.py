@@ -99,3 +99,13 @@ class PRIVILEGE_SET(ctypes.Structure):
         ("Control", DWORD),
         ("Privileges", LUID_AND_ATTRIBUTES)
     ]
+
+
+#
+# Structure for TOKEN_PRIVILEGES
+#
+class TOKEN_PRIVILEGES(ctypes.Structure):
+    _fields_= [
+        ("PrivilegeCount", DWORD),
+        ("Privileges", LUID_AND_ATTRIBUTES)
+    ]

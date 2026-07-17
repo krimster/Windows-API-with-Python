@@ -65,19 +65,14 @@ def main() -> None:
         hProcess = helpers.open_process(pid)
         token = helpers.open_process_token(hProcess,constants.TOKEN_ALL_ACCESS)
 
-        system_name = None
-        privilege_name  = "SeDebugPrivilege"
-        luid = structures.LUID()
+        privilege_name  = "SeDebugPrivilege" ##"SeChangeNotifyPrivilege" SeImpersonatePrivilege
+        luid = helpers.lookup_privilege_value(privilege_name)
 
-        success = advapi32.LookupPrivilegeValueW(system_name, privilege_name, ctypes.byref(luid))
-
-        if not success:
-            raise RuntimeError(
-                f"LookupPrivilegeValueW failed!. Error: {ctypes.get_last_error()}"
-            )
-        
         print("Got LUID")
         ## check LUID LowPart and HighPart
+        print("LowPart: {0}".format(luid.LowPart))
+        print("HighPart: {0}".format(luid.HighPart))
+
 
         # check privilege
         required_privileges = structures.PRIVILEGE_SET()
@@ -88,6 +83,20 @@ def main() -> None:
         required_privileges.Privileges.Luid = luid
         required_privileges.Privileges.Attributes = constants.SE_PRIVILEGE_ENABLED
         
+        ## start debugging
+        print(f"PrivilegeCount : {required_privileges.PrivilegeCount}")
+        print(f"Control        : {required_privileges.Control}")
+        print(f"LUID LowPart   : {required_privileges.Privileges.Luid.LowPart}")
+        print(f"LUID HighPart  : {required_privileges.Privileges.Luid.HighPart}")
+        print(f"Attributes     : {required_privileges.Privileges.Attributes:#x}")
+        ## end debugging
+
+        if helpers.check_privilege(token, luid):
+            print("Privilege enabled: {}".format(privilege_name))
+        else:
+            print("Privilege disabled: {0}".format(privilege_name))
+
+
         # init result 
         result = wintypes.BOOL()
 
@@ -104,7 +113,6 @@ def main() -> None:
             print("Priv enabled: {0}".format(privilege_name))
         else:
             print("Priv disabled: {0}".format(privilege_name))
-
     
     except RuntimeError as e:
         print(e)

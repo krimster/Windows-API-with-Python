@@ -10,9 +10,20 @@ from ctypes import wintypes
 from ctypes.wintypes import DWORD
 from ctypes import POINTER, byref
 
-from common.winapi import user32, kernel32
+from common.winapi import user32, kernel32, advapi32
 import common.prototypes  # Registers all API prototypes
 import common.constants as constants
+from common.structures import (
+    SECURITY_ATTRIBUTES,
+    STARTUP_INFO,
+    PROCESS_INFORMATION,
+    DNS_CACHE_ENTRY,
+    LUID,
+    LUID_AND_ATTRIBUTES,
+    PRIVILEGE_SET,
+    TOKEN_PRIVILEGES,
+)
+
 
 #
 # Window Helpers
@@ -83,3 +94,43 @@ def open_process_token(hProcess, access):
         )
 
     return token
+
+
+def lookup_privilege_value(privilege_name: str) -> structures.LUID:
+    luid = LUID()
+
+    if not advapi32.LookupPrivilegeValueW(None, privilege_name, ctypes.byref(luid)):
+        raise RuntimeError(
+            f"LookupPrivilegeValueW failed!. Error: {ctypes.get_last_error()}"
+        )
+
+    return luid
+
+
+def check_privilege(
+    token: wintypes.HANDLE,
+    luid: LUID,
+    attributes: wintypes.DWORD = constants.SE_PRIVILEGE_ENABLED,
+) -> bool:
+    """Return True if the specified privilege is enabled in the token."""
+
+    privilege_set = PRIVILEGE_SET()
+    privilege_set.PrivilegeCount = 1
+    privilege_set.Control = 0
+    privilege_set.Privileges.Luid = luid
+    privilege_set.Privileges.Attributes = attributes
+
+    result = wintypes.BOOL()
+
+    success = advapi32.PrivilegeCheck(
+        token,
+        ctypes.byref(privilege_set),
+        ctypes.byref(result),
+    )
+
+    if not success:
+        raise RuntimeError(
+            f"PrivilegeCheck failed. Error: {ctypes.get_last_error()}"
+        )
+
+    return bool(result.value)
