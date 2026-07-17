@@ -110,6 +110,7 @@ def lookup_privilege_value(privilege_name: str) -> structures.LUID:
 def check_privilege(
     token: wintypes.HANDLE,
     luid: LUID,
+    privilege_name: str,
     attributes: wintypes.DWORD = constants.SE_PRIVILEGE_ENABLED,
 ) -> bool:
     """Return True if the specified privilege is enabled in the token."""
@@ -133,4 +134,66 @@ def check_privilege(
             f"PrivilegeCheck failed. Error: {ctypes.get_last_error()}"
         )
 
+    if result.value:
+        print("Privilege {0}: enabled".format(privilege_name))    
+    else:
+        print("Privilege {0}: disabled".format(privilege_name))
+          
     return bool(result.value)
+
+
+def adjust_privilege(
+    token: wintypes.HANDLE,
+    luid: LUID,
+    attributes: wintypes.DWORD,
+):
+    disable_all_privileges = False
+    token_privileges = TOKEN_PRIVILEGES()
+
+    buffer_length = ctypes.sizeof(token_privileges)
+    previous_state = TOKEN_PRIVILEGES()
+    return_length = wintypes.DWORD()
+
+    token_privileges.PrivilegeCount = 1
+    token_privileges.Privileges.Luid = luid
+    token_privileges.Privileges.Attributes = attributes
+
+    print(f"New attribute: {token_privileges.Privileges.Attributes:#x}")
+
+    success = advapi32.AdjustTokenPrivileges(
+        token,
+        disable_all_privileges,
+        ctypes.byref(token_privileges),
+        buffer_length,
+        ctypes.byref(previous_state),
+        ctypes.byref(return_length)
+    )
+
+    if not success:
+        raise RuntimeError(
+            f"AdjustTokenPrivileges failed. Error: {ctypes.get_last_error()}"
+        )
+
+    error = ctypes.get_last_error()
+    print(error)
+
+    if error == constants.ERROR_NOT_ALL_ASSIGNED:
+        raise RuntimeError(
+            f"Status: {privilege_name} is not present in this token."
+        )
+
+    print(f"Previous count : {previous_state.PrivilegeCount}")
+
+    if previous_state.PrivilegeCount:
+        print(f"Previous attr  : {previous_state.Privileges.Attributes:#x}")
+    
+    print("Token flipped")
+
+
+
+def get_current_process()-> wintypes.HANDLE:
+    return kernel32.GetCurrentProcess()
+
+
+def open_current_process_token(access: int) -> wintypes.HANDLE:
+    return open_process_token(kernel32.GetCurrentProcess(), access)
