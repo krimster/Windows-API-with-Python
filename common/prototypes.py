@@ -4,6 +4,8 @@ from ctypes import wintypes
 
 from common.winapi import user32, kernel32, dnsapi, advapi32
 
+from common import enums
+
 from common.structures import (
     SECURITY_ATTRIBUTES,
     STARTUP_INFO,
@@ -14,6 +16,7 @@ from common.structures import (
     PRIVILEGE_SET,
     TOKEN_PRIVILEGES,
 )
+
 
 
 # HWND FindWindowW(
@@ -187,3 +190,54 @@ advapi32.AdjustTokenPrivileges.argtypes = (
 )
 
 advapi32.AdjustTokenPrivileges.restype = wintypes.BOOL
+
+
+# BOOL DuplicateTokenEx(
+#   [in]           HANDLE                       hExistingToken,
+#   [in]           DWORD                        dwDesiredAccess,
+#   [in, optional] LPSECURITY_ATTRIBUTES        lpTokenAttributes,
+#   [in]           SECURITY_IMPERSONATION_LEVEL ImpersonationLevel,
+#   [in]           TOKEN_TYPE                   TokenType,
+#   [out]          PHANDLE                      phNewToken
+# );
+
+advapi32.DuplicateTokenEx.argtypes = (
+    wintypes.HANDLE,
+    wintypes.DWORD,
+    LPSECURITY_ATTRIBUTES,
+    wintypes.DWORD,      # SECURITY_IMPERSONATION_LEVEL
+    wintypes.DWORD,      # TOKEN_TYPE
+    wintypes.PHANDLE,
+)
+advapi32.DuplicateTokenEx.restype = wintypes.BOOL
+
+
+# BOOL CreateProcessWithTokenW(
+#   [in]                HANDLE                hToken,
+#   [in]                DWORD                 dwLogonFlags,
+#   [in, optional]      LPCWSTR               lpApplicationName,
+#   [in, out, optional] LPWSTR                lpCommandLine,
+#   [in]                DWORD                 dwCreationFlags,
+#   [in, optional]      LPVOID                lpEnvironment,
+#   [in, optional]      LPCWSTR               lpCurrentDirectory,
+#   [in]                LPSTARTUPINFOW        lpStartupInfo,
+#   [out]               LPPROCESS_INFORMATION lpProcessInformation
+# );
+
+#
+# Structure for CreateProcessWithTokenW
+#
+
+advapi32.CreateProcessWithTokenW.argtypes = (
+    wintypes.HANDLE,
+    wintypes.DWORD,
+    wintypes.LPCWSTR,
+    wintypes.LPCWSTR,
+    wintypes.DWORD,
+    wintypes.LPVOID,
+    wintypes.LPCWSTR,
+    ctypes.POINTER(STARTUP_INFO),
+    ctypes.POINTER(PROCESS_INFORMATION),
+)
+advapi32.CreateProcessWithTokenW.restype = wintypes.BOOL
+
